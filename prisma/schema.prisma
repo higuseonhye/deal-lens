@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// AgentOS: AI Workforce as units of labor
+model Agent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  name      String   // e.g. "Search Agent", "Question Generator"
+  type      String   // search | question_gen | reliability
+  model     String?  // gpt-4o-mini, etc.
+  tasks     Task[]
+}
+
+// AgentOS: Each work unit (Reputation 시드)
+model Task {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  agentId      String
+  agent        Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  workflowType String   @default("vc_diligence") // vc_diligence | research | ...
+  taskType     String   // collect | question_gen | reliability_card
+  status       String   @default("completed")    // completed | failed
+  inputRef     String?  // JSON: { companyName, question, ... }
+  outputRef    String?  // JSON: { cardId, questions, ... }
+  tokensUsed   Int?     // from OpenAI usage
+  latencyMs    Int?     // execution time
+  feedback     Int?     // 1-5 rating (future)
+}
+
+model ReliabilityCard {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  companyName String
+  question    String
+  url         String?
+  extraText   String?
+  cardJson    String   // JSON string of full ReliabilityCard
+  nextActions NextAction[]
+}
+
+model NextAction {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  cardId       String
+  card         ReliabilityCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  companyName  String   // for grouping
+  action       String
+  owner        String   // human | ai
+  expectedTime String
+  status       String   @default("todo") // todo | in_progress | done
+  evidence     String?  // when done: what was found
+}
