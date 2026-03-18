@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
     const sources: CollectResult["sources"] = [];
 
-    // 1) URL에서 텍스트 추출
+    // 1) Extract text from URL
     if (url?.trim()) {
       try {
         const { text, title } = await extractTextFromUrl(url.trim());
@@ -34,14 +34,14 @@ export async function POST(request: NextRequest) {
       } catch (err) {
         return NextResponse.json(
           {
-            error: `URL 추출 실패: ${err instanceof Error ? err.message : "Unknown error"}`,
+            error: `URL extraction failed: ${err instanceof Error ? err.message : "Unknown error"}`,
           },
           { status: 400 }
         );
       }
     }
 
-    // 2) 회사명 검색 (Serper API)
+    // 2) Company name search (Serper API)
     if (companyName?.trim()) {
       const searchResults = await searchByCompany(companyName.trim());
       for (const r of searchResults) {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 3) 사용자가 붙여넣은 텍스트
+    // 3) User-pasted text
     if (extraText?.trim()) {
       sources.push({
         url: null,
@@ -65,8 +65,8 @@ export async function POST(request: NextRequest) {
 
     if (sources.length === 0) {
       const msg = companyName?.trim()
-        ? "검색 결과가 없습니다. URL 또는 추가 텍스트를 직접 입력해보세요."
-        : "회사명, URL, 또는 추가 텍스트 중 하나 이상을 입력해주세요.";
+        ? "No search results. Try entering a URL or extra text directly."
+        : "Please enter at least one of: company name, URL, or extra text.";
       return NextResponse.json({ error: msg }, { status: 400 });
     }
 

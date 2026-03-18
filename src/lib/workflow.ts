@@ -1,5 +1,5 @@
 /**
- * AgentOS: workflowType - 도메인 확장 시 추가
+ * AgentOS: workflowType - add when extending domain
  */
 export const WORKFLOW_TYPES = {
   VC_DILIGENCE: "vc_diligence",

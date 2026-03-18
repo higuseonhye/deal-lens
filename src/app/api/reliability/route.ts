@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
         model: MODEL,
       }).catch(() => {});
       return NextResponse.json(
-        { error: `JSON 파싱 실패. ${lastError}` },
+        { error: `JSON parse failed. ${lastError}` },
         { status: 500 }
       );
     }
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // AgentOS: Reputation 시드 - Task 기록
+    // AgentOS: Reputation seed - Task recording
     await recordTask({
       agentType: "reliability",
       workflowType: "vc_diligence",

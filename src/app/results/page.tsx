@@ -22,11 +22,11 @@ function CardBlock({ card }: { card: ReliabilityCardType }) {
 
       {card.sourceQualitySummary && (
         <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-          <h2 className="text-base font-semibold text-[var(--foreground)]">소스 품질</h2>
+          <h2 className="text-base font-semibold text-[var(--foreground)]">Source Quality</h2>
           <div className="mt-2 flex gap-6 text-sm text-[var(--muted)]">
-            <span>1차: {card.sourceQualitySummary.primarySources}</span>
-            <span>2차: {card.sourceQualitySummary.secondarySources}</span>
-            <span>미확인: {card.sourceQualitySummary.unknown}</span>
+            <span>Primary: {card.sourceQualitySummary.primarySources}</span>
+            <span>Secondary: {card.sourceQualitySummary.secondarySources}</span>
+            <span>Unknown: {card.sourceQualitySummary.unknown}</span>
           </div>
         </section>
       )}
@@ -39,7 +39,7 @@ function CardBlock({ card }: { card: ReliabilityCardType }) {
               <li key={i} className="border-l-2 border-[var(--card-border)] pl-3 text-sm">
                 <p className="font-medium text-[var(--foreground)]">{entry.claim}</p>
                 <span className={entry.confidence >= 0.7 ? "text-[var(--success)]" : entry.confidence >= 0.4 ? "text-[var(--warning)]" : "text-[var(--danger)]"}>
-                  신뢰도 {(entry.confidence * 100).toFixed(0)}%
+                  Confidence {(entry.confidence * 100).toFixed(0)}%
                 </span>
               </li>
             ))}
@@ -49,7 +49,7 @@ function CardBlock({ card }: { card: ReliabilityCardType }) {
 
       {card.missingCoverage?.length > 0 && (
         <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-          <h2 className="text-base font-semibold text-[var(--foreground)]">커버리지 갭</h2>
+          <h2 className="text-base font-semibold text-[var(--foreground)]">Coverage Gaps</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {card.missingCoverage.slice(0, 3).map((item, i) => (
               <li key={i}>
@@ -63,7 +63,7 @@ function CardBlock({ card }: { card: ReliabilityCardType }) {
 
       {card.diligenceQuestions?.length > 0 && (
         <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-          <h2 className="text-base font-semibold text-[var(--foreground)]">실사 질문</h2>
+          <h2 className="text-base font-semibold text-[var(--foreground)]">Diligence Questions</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {card.diligenceQuestions.slice(0, 4).map((q, i) => (
               <li key={i} className="flex gap-2">
@@ -79,7 +79,7 @@ function CardBlock({ card }: { card: ReliabilityCardType }) {
 
       {card.redFlags?.length > 0 && (
         <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-          <h2 className="text-base font-semibold text-[var(--foreground)]">리스크 플래그</h2>
+          <h2 className="text-base font-semibold text-[var(--foreground)]">Red Flags</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {card.redFlags.slice(0, 3).map((item, i) => (
               <li key={i}>
@@ -119,15 +119,15 @@ function ResultsContent() {
       )
     )
       .then((data) => setCards(data.map((d: { card: ReliabilityCardType }) => d.card)))
-      .catch(() => setError("카드를 불러올 수 없습니다."))
+      .catch(() => setError("Failed to load cards."))
       .finally(() => setLoading(false));
   }, [ids.join(",")]);
 
   if (ids.length === 0) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-[var(--muted)]">결과 ID가 없습니다.</p>
-        <Link href="/" className="text-[var(--accent)] hover:underline">홈으로</Link>
+        <p className="text-[var(--muted)]">No result IDs provided.</p>
+        <Link href="/" className="text-[var(--accent)] hover:underline">Back to Home</Link>
       </main>
     );
   }
@@ -135,7 +135,7 @@ function ResultsContent() {
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--muted)]">로딩 중…</p>
+        <p className="text-[var(--muted)]">Loading…</p>
       </main>
     );
   }
@@ -143,8 +143,8 @@ function ResultsContent() {
   if (error || cards.length === 0) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-[var(--danger)]">{error || "카드를 찾을 수 없습니다."}</p>
-        <Link href="/" className="text-[var(--accent)] hover:underline">홈으로</Link>
+        <p className="text-[var(--danger)]">{error || "Cards not found."}</p>
+        <Link href="/" className="text-[var(--accent)] hover:underline">Back to Home</Link>
       </main>
     );
   }
@@ -156,19 +156,19 @@ function ResultsContent() {
           <Link href="/" className="text-[var(--accent)] hover:underline">
             ← Deal Lens
           </Link>
-          <span className="text-sm text-[var(--muted)]">{cards.length}개 카드</span>
+          <span className="text-sm text-[var(--muted)]">{cards.length} cards</span>
         </header>
 
         <div className="space-y-12">
           {cards.map((card, i) => (
             <div key={i}>
               <div className="mb-4 flex items-center justify-between">
-                <span className="text-sm font-medium text-[var(--muted)]">질문 {i + 1}</span>
+                <span className="text-sm font-medium text-[var(--muted)]">Question {i + 1}</span>
                 <Link
                   href={`/r/${ids[i]}`}
                   className="text-sm text-[var(--accent)] hover:underline"
                 >
-                  전체 보기 →
+                  View full →
                 </Link>
               </div>
               <CardBlock card={card} />
@@ -184,7 +184,7 @@ export default function ResultsPage() {
   return (
     <Suspense fallback={
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--muted)]">로딩 중…</p>
+        <p className="text-[var(--muted)]">Loading…</p>
       </main>
     }>
       <ResultsContent />

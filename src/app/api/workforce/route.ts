@@ -1,5 +1,5 @@
 /**
- * AgentOS: Workforce / Reputation API - 에이전트 성과·비용·정확도
+ * AgentOS: Workforce / Reputation API - agent performance, cost, accuracy
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";

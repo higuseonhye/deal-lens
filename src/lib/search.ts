@@ -1,7 +1,7 @@
 /**
- * 회사명 검색
- * 1) SERPER_API_KEY 있으면 → Serper (Google) 사용
- * 2) 없으면 → DuckDuckGo (duck-duck-scrape, 무료·API 키 불필요)
+ * Company name search
+ * 1) If SERPER_API_KEY exists → use Serper (Google)
+ * 2) Otherwise → DuckDuckGo (duck-duck-scrape, free, no API key required)
  */
 
 export interface SearchResult {

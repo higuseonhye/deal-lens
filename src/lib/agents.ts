@@ -1,5 +1,5 @@
 /**
- * AgentOS: AI Workforce - 에이전트 조회/생성
+ * AgentOS: AI Workforce - agent lookup/create
  */
 import { prisma } from "./prisma";
 

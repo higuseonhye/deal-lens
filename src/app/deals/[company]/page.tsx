@@ -44,7 +44,7 @@ export default function DealPage() {
         return res.json();
       })
       .then(setData)
-      .catch(() => setError("딜을 불러올 수 없습니다."))
+      .catch(() => setError("Failed to load deal."))
       .finally(() => setLoading(false));
   }, [company]);
 
@@ -72,7 +72,7 @@ export default function DealPage() {
   if (loading || !company) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--muted)]">로딩 중…</p>
+        <p className="text-[var(--muted)]">Loading…</p>
       </main>
     );
   }
@@ -80,9 +80,9 @@ export default function DealPage() {
   if (error || !data) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-[var(--danger)]">{error || "딜을 찾을 수 없습니다."}</p>
+        <p className="text-[var(--danger)]">{error || "Deal not found."}</p>
         <Link href="/history" className="text-[var(--accent)] hover:underline">
-          딜 목록으로
+          Back to deals
         </Link>
       </main>
     );
@@ -97,10 +97,10 @@ export default function DealPage() {
         <header className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/history" className="text-[var(--accent)] hover:underline">
-              ← 딜 목록
+              ← Deals
             </Link>
             <Link href="/" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]">
-              새 카드
+              New card
             </Link>
           </div>
         </header>
@@ -109,14 +109,14 @@ export default function DealPage() {
           {data.companyName}
         </h1>
 
-        {/* 다음 액션 통합 */}
+        {/* Next actions */}
         {data.nextActions.length > 0 && (
           <section className="mb-10 rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
             <h2 className="text-lg font-semibold text-[var(--foreground)]">
-              다음 액션 ({todoCount} 남음 / {doneCount} 완료)
+              Next actions ({todoCount} remaining / {doneCount} done)
             </h2>
             <p className="mt-1 text-sm text-[var(--muted)]">
-              액션 완료 후 증거를 추가하면, 정보 업데이트로 카드를 재평가할 수 있습니다.
+              After completing an action and adding evidence, you can re-evaluate the card with updated info.
             </p>
             <ul className="mt-4 space-y-3">
               {data.nextActions.map((na, i) => (
@@ -134,7 +134,7 @@ export default function DealPage() {
                         {na.action}
                       </p>
                       <p className="mt-1 text-xs text-[var(--muted)]">
-                        {na.owner} · {na.expectedTime} · 질문: {na.cardQuestion.slice(0, 40)}…
+                        {na.owner} · {na.expectedTime} · Q: {na.cardQuestion.slice(0, 40)}…
                       </p>
                       {na.evidence && (
                         <p className="mt-2 rounded bg-[var(--success)]/10 px-2 py-1.5 text-sm text-[var(--foreground)]">
@@ -147,14 +147,14 @@ export default function DealPage() {
                             type="text"
                             value={evidenceInput}
                             onChange={(e) => setEvidenceInput(e.target.value)}
-                            placeholder="발견한 증거/결과 입력"
+                            placeholder="Enter evidence or result"
                             className="flex-1 rounded border border-[var(--card-border)] bg-[var(--background)] px-3 py-2 text-sm"
                           />
                           <button
                             onClick={() => updateActionStatus(na.id!, "done", evidenceInput)}
                             className="rounded bg-[var(--success)] px-3 py-2 text-sm text-white"
                           >
-                            완료
+                            Done
                           </button>
                           <button
                             onClick={() => {
@@ -163,7 +163,7 @@ export default function DealPage() {
                             }}
                             className="rounded border border-[var(--card-border)] px-3 py-2 text-sm"
                           >
-                            취소
+                            Cancel
                           </button>
                         </div>
                       )}
@@ -171,7 +171,7 @@ export default function DealPage() {
                     <div className="shrink-0 flex items-center gap-2">
                       {na.status === "done" ? (
                         <span className="rounded bg-[var(--success)]/20 px-2 py-1 text-xs text-[var(--success)]">
-                          완료
+                          Done
                         </span>
                       ) : na.id ? (
                         <>
@@ -182,20 +182,20 @@ export default function DealPage() {
                             }}
                             className="rounded border border-[var(--accent)]/50 px-2 py-1 text-xs text-[var(--accent)] hover:bg-[var(--accent)]/10"
                           >
-                            완료 처리
+                            Mark done
                           </button>
                           <select
                             value={na.status}
                             onChange={(e) => updateActionStatus(na.id!, e.target.value)}
                             className="rounded border border-[var(--card-border)] bg-[var(--background)] px-2 py-1 text-xs"
                           >
-                            <option value="todo">할 일</option>
-                            <option value="in_progress">진행 중</option>
-                            <option value="done">완료</option>
+                            <option value="todo">Todo</option>
+                            <option value="in_progress">In progress</option>
+                            <option value="done">Done</option>
                           </select>
                         </>
                       ) : (
-                        <span className="text-xs text-[var(--muted)]">(DB 미동기화)</span>
+                        <span className="text-xs text-[var(--muted)]">(DB not synced)</span>
                       )}
                     </div>
                   </div>
@@ -206,12 +206,12 @@ export default function DealPage() {
               href={`/?company=${encodeURIComponent(data.companyName)}`}
               className="mt-4 inline-block text-sm text-[var(--accent)] hover:underline"
             >
-              정보 업데이트 후 재평가 →
+              Re-evaluate with updated info →
             </Link>
           </section>
         )}
 
-        {/* 카드 목록 */}
+        {/* Card list */}
         <section>
           <h2 className="mb-4 text-lg font-semibold text-[var(--foreground)]">
             Reliability Cards
@@ -227,7 +227,7 @@ export default function DealPage() {
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-[var(--foreground)]">{c.question}</p>
                       <p className="mt-1 text-xs text-[var(--muted)]">
-                        {new Date(c.createdAt).toLocaleDateString("ko-KR")}
+                        {new Date(c.createdAt).toLocaleDateString("en-US")}
                       </p>
                     </div>
                     <div className="shrink-0">

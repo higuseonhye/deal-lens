@@ -1,5 +1,5 @@
 /**
- * AgentOS: Task 기록 - Reputation 시드 (성과/비용/정확도 누적)
+ * AgentOS: Task recording - Reputation seed (performance/cost/accuracy accumulation)
  */
 import { prisma } from "./prisma";
 import type { AgentType } from "./agents";

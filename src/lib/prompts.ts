@@ -1,5 +1,5 @@
 /**
- * Reliability Card 프롬프트 세트 (코드 상수로 고정, 재현성 확보)
+ * Reliability Card prompt set (fixed as code constants for reproducibility)
  */
 
 export const SYSTEM_PROMPT = `You are a VC due diligence reliability assistant. Your job is NOT to recommend investing. Your job is to produce a Reliability Card: evidence quality, coverage gaps, contradictions, and the smallest set of diligence questions that would most increase confidence.

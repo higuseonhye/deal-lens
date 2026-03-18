@@ -31,7 +31,7 @@ export default function WorkforcePage() {
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--muted)]">로딩 중…</p>
+        <p className="text-[var(--muted)]">Loading…</p>
       </main>
     );
   }
@@ -44,19 +44,19 @@ export default function WorkforcePage() {
             ← Deal Lens
           </Link>
           <h1 className="text-lg font-semibold text-[var(--foreground)]">
-            Workforce (Reputation 시드)
+            Workforce (Reputation seed)
           </h1>
         </header>
 
         <p className="mb-6 text-sm text-[var(--muted)]">
-          AI 에이전트의 성과·비용·정확도가 누적됩니다. AgentOS 확장 시 Reputation 그래프 기반이 됩니다.
+          AI agent performance, cost, and accuracy are tracked. With AgentOS extension this becomes the basis for Reputation graphs.
         </p>
 
         {agents.length === 0 ? (
           <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card)]/50 p-8 text-center">
-            <p className="text-[var(--muted)]">아직 실행된 에이전트가 없습니다.</p>
+            <p className="text-[var(--muted)]">No agents have run yet.</p>
             <p className="mt-2 text-xs text-[var(--muted)]">
-              카드 생성, 질문 생성, 정보 수집을 하면 여기에 기록됩니다.
+              Card creation, question generation, and collection will be recorded here.
             </p>
           </div>
         ) : (
@@ -78,19 +78,19 @@ export default function WorkforcePage() {
                       a.successRate >= 90 ? "bg-[var(--success)]/20 text-[var(--success)]" : "bg-[var(--warning)]/20 text-[var(--warning)]"
                     }`}
                   >
-                    {a.successRate.toFixed(0)}% 성공
+                    {a.successRate.toFixed(0)}% success
                   </span>
                 </div>
                 <div className="mt-3 flex gap-6 text-sm">
                   <span>
-                    <span className="text-[var(--muted)]">태스크</span> {a.taskCount}
+                    <span className="text-[var(--muted)]">Tasks</span> {a.taskCount}
                   </span>
                   <span>
-                    <span className="text-[var(--muted)]">토큰</span> {a.totalTokens.toLocaleString()}
+                    <span className="text-[var(--muted)]">Tokens</span> {a.totalTokens.toLocaleString()}
                   </span>
                   {a.avgLatencyMs != null && (
                     <span>
-                      <span className="text-[var(--muted)]">평균</span> {a.avgLatencyMs}ms
+                      <span className="text-[var(--muted)]">Avg</span> {a.avgLatencyMs}ms
                     </span>
                   )}
                 </div>

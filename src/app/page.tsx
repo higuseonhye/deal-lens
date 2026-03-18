@@ -115,7 +115,7 @@ export default function HomePage() {
   async function handleCollect() {
     const hasInput = companyName.trim() || url.trim() || extraText.trim();
     if (!hasInput) {
-      setError("회사명, URL, 또는 추가 텍스트 중 하나 이상을 입력해주세요.");
+      setError("Please enter at least one of: company name, URL, or extra text.");
       return;
     }
     setError(null);
@@ -138,14 +138,14 @@ export default function HomePage() {
       try {
         data = await res.json();
       } catch {
-        throw new Error("서버 응답을 읽을 수 없습니다.");
+        throw new Error("Could not read server response.");
       }
-      if (!res.ok) throw new Error(data.error || "수집 실패");
+      if (!res.ok) throw new Error(data.error || "Collection failed");
       setCollectedSources(data.sources ?? []);
       const combined = (data.sources ?? [])
         .map(
           (s: CollectedSource, i: number) =>
-            `[소스 ${i + 1}${s.url ? ` - ${s.url}` : ""}]\n${s.text}`
+            `[Source ${i + 1}${s.url ? ` - ${s.url}` : ""}]\n${s.text}`
         )
         .join("\n\n---\n\n");
       setCollectedTextDisplay(combined);
@@ -153,12 +153,12 @@ export default function HomePage() {
     } catch (err) {
       if (err instanceof Error) {
         if (err.name === "AbortError") {
-          setError("요청 시간이 초과되었습니다. URL이나 추가 텍스트를 직접 입력해보세요.");
+          setError("Request timed out. Try entering the URL or extra text directly.");
         } else {
           setError(err.message);
         }
       } else {
-        setError("수집 중 오류가 발생했습니다.");
+        setError("An error occurred while collecting.");
       }
     } finally {
       setLoading(false);
@@ -178,7 +178,7 @@ export default function HomePage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "질문 생성 실패");
+      if (!res.ok) throw new Error(data.error || "Question generation failed");
       setQuestionCandidates(data.questions || []);
       setSelectedQuestions(data.questions?.length ? [data.questions[0]] : []);
       setStep(3);
@@ -196,14 +196,14 @@ export default function HomePage() {
       ? [custom]
       : selectedQuestions.filter(Boolean);
     if (questionsToCreate.length === 0) {
-      setError("질문을 하나 이상 선택하거나 직접 입력해주세요.");
+      setError("Please select at least one question or enter one directly.");
       return;
     }
     setError(null);
     setLoading(true);
     try {
       const originalCombined = collectedSources
-        .map((s, i) => `[소스 ${i + 1}${s.url ? ` - ${s.url}` : ""}]\n${s.text}`)
+        .map((s, i) => `[Source ${i + 1}${s.url ? ` - ${s.url}` : ""}]\n${s.text}`)
         .join("\n\n---\n\n");
       const sources =
         collectedTextDisplay === originalCombined
@@ -273,7 +273,7 @@ export default function HomePage() {
             </div>
             <div className="flex items-center gap-3">
               <Link href="/history" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] underline-offset-2 hover:underline">
-                딜 목록
+                Deals
               </Link>
               <Link href="/workforce" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] underline-offset-2 hover:underline">
                 Workforce
@@ -296,7 +296,7 @@ export default function HomePage() {
                   }}
                   className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] underline-offset-2 hover:underline"
                 >
-                  새로 시작
+                  Start over
                 </button>
               )}
             </div>
@@ -313,9 +313,9 @@ export default function HomePage() {
               ))}
             </div>
             <div className="mt-2 flex justify-between text-xs text-[var(--muted)]">
-              <span className={step >= 1 ? "text-[var(--accent)] font-medium" : ""}>정보 수집</span>
-              <span className={step >= 2 ? "text-[var(--accent)] font-medium" : ""}>질문 생성</span>
-              <span className={step >= 3 ? "text-[var(--accent)] font-medium" : ""}>카드 생성</span>
+              <span className={step >= 1 ? "text-[var(--accent)] font-medium" : ""}>Collect</span>
+              <span className={step >= 2 ? "text-[var(--accent)] font-medium" : ""}>Questions</span>
+              <span className={step >= 3 ? "text-[var(--accent)] font-medium" : ""}>Create Card</span>
             </div>
           </div>
         </header>
@@ -330,14 +330,14 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Step 1: 정보 수집 */}
+        {/* Step 1: Collect */}
         {step === 1 && (
           <div className="space-y-6">
             <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card)]/50 p-6 shadow-sm">
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-[var(--foreground)]">
-                    회사명 <span className="text-[var(--danger)]">*</span>
+                    Company name <span className="text-[var(--danger)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -345,14 +345,14 @@ export default function HomePage() {
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     className="mt-2 w-full rounded-lg border border-[var(--card-border)] bg-[var(--background)] px-4 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-glow)] transition-all"
-                    placeholder="예: Acme Corp"
+                    placeholder="e.g. Acme Corp"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--foreground)]">
-                    URL <span className="text-[var(--muted)] font-normal">(선택)</span>
+                    URL <span className="text-[var(--muted)] font-normal">(optional)</span>
                   </label>
-                  <p className="mt-0.5 text-xs text-[var(--muted)]">페이지 텍스트 자동 추출</p>
+                  <p className="mt-0.5 text-xs text-[var(--muted)]">Auto-extract page text</p>
                   <input
                     type="url"
                     value={url}
@@ -363,19 +363,19 @@ export default function HomePage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--foreground)]">
-                    추가 텍스트 / 메모 <span className="text-[var(--muted)] font-normal">(선택)</span>
+                    Extra text / notes <span className="text-[var(--muted)] font-normal">(optional)</span>
                   </label>
                   <textarea
                     rows={4}
                     value={extraText}
                     onChange={(e) => setExtraText(e.target.value)}
                     className="mt-2 w-full rounded-lg border border-[var(--card-border)] bg-[var(--background)] px-4 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-glow)] transition-all resize-y"
-                    placeholder="붙여넣기 또는 메모"
+                    placeholder="Paste or add notes"
                   />
                 </div>
               </div>
               <p className="mt-4 border-t border-[var(--card-border)] pt-4 text-xs text-[var(--muted)]">
-                회사명만 입력해도 검색으로 관련 정보를 수집합니다 (Serper 또는 DuckDuckGo 무료).
+                Entering only a company name will collect related info via search (Serper or DuckDuckGo).
               </p>
             </div>
             <button
@@ -387,21 +387,21 @@ export default function HomePage() {
               {loading ? (
                 <span className="inline-flex items-center justify-center gap-2">
                   <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[#0a0a0f] border-t-transparent" />
-                  정보 수집 중…
+                  Collecting…
                 </span>
               ) : (
-                "정보 수집"
+                "Collect"
               )}
             </button>
           </div>
         )}
 
-        {/* Step 2: 수집 결과 + 질문 생성 */}
+        {/* Step 2: Collected result + question generation */}
         {step === 2 && (
           <div className="space-y-6">
             <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card)]/50 p-6 shadow-sm">
               <label className="block text-sm font-medium text-[var(--foreground)]">
-                수집된 정보 <span className="text-[var(--muted)] font-normal">(수정 가능)</span>
+                Collected info <span className="text-[var(--muted)] font-normal">(editable)</span>
               </label>
               <textarea
                 rows={12}
@@ -416,7 +416,7 @@ export default function HomePage() {
                 onClick={() => setStep(1)}
                 className="rounded-xl border border-[var(--card-border)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--card)] hover:border-[var(--muted)]/50"
               >
-                이전
+                Back
               </button>
               <button
                 onClick={handleGenerateQuestions}
@@ -426,25 +426,25 @@ export default function HomePage() {
                 {loading ? (
                   <span className="inline-flex items-center justify-center gap-2">
                     <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[#0a0a0f] border-t-transparent" />
-                    질문 생성 중…
+                    Generating questions…
                   </span>
                 ) : (
-                  "질문 생성"
+                  "Generate questions"
                 )}
               </button>
             </div>
           </div>
         )}
 
-        {/* Step 3: 질문 선택 + 카드 생성 */}
+        {/* Step 3: Select questions + create card */}
         {step === 3 && (
           <form onSubmit={handleCreateCard} className="space-y-6">
             <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card)]/50 p-6 shadow-sm">
               <label className="block text-sm font-medium text-[var(--foreground)]">
-                투자 질문 선택 또는 직접 입력
+                Select investment questions or enter your own
               </label>
               <p className="mt-1 text-xs text-[var(--muted)]">
-                여러 질문을 선택하면 각각에 대해 Reliability Card가 생성됩니다.
+                Selecting multiple questions creates a Reliability Card for each.
               </p>
               <div className="mt-4 space-y-2">
                 {questionCandidates.map((q) => (
@@ -474,7 +474,7 @@ export default function HomePage() {
                     setCustomQuestion(e.target.value);
                     if (e.target.value.trim()) setSelectedQuestions([]);
                   }}
-                  placeholder="또는 직접 질문 입력 (직접 입력 시 선택 해제)"
+                  placeholder="Or enter your own question (clears selection)"
                   className="w-full rounded-lg border border-[var(--card-border)] bg-[var(--background)] px-4 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-glow)] transition-all"
                 />
               </div>
@@ -485,7 +485,7 @@ export default function HomePage() {
                 onClick={() => setStep(2)}
                 className="rounded-xl border border-[var(--card-border)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--card)] hover:border-[var(--muted)]/50"
               >
-                이전
+                Back
               </button>
               <button
                 type="submit"
@@ -496,11 +496,11 @@ export default function HomePage() {
                   <span className="inline-flex items-center justify-center gap-2">
                     <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[#0a0a0f] border-t-transparent" />
                     {(customQuestion.trim() ? 1 : selectedQuestions.length) > 1
-                      ? `${customQuestion.trim() ? 1 : selectedQuestions.length}개 카드 생성 중…`
-                      : "Reliability Card 생성 중…"}
+                      ? `Creating ${customQuestion.trim() ? 1 : selectedQuestions.length} cards…`
+                      : "Creating Reliability Card…"}
                   </span>
                 ) : (
-                  "Reliability Card 생성"
+                  "Create Reliability Card"
                 )}
               </button>
             </div>

@@ -21,14 +21,14 @@ export default function ResultView() {
         return res.json();
       })
       .then((data) => setCard(data.card))
-      .catch(() => setError("카드를 불러올 수 없습니다."))
+      .catch(() => setError("Failed to load card."))
       .finally(() => setLoading(false));
   }, [id]);
 
   if (loading || !id || id === "undefined") {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--muted)]">로딩 중…</p>
+        <p className="text-[var(--muted)]">Loading…</p>
       </main>
     );
   }
@@ -36,8 +36,8 @@ export default function ResultView() {
   if (error || !card) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-[var(--danger)]">{error || "카드를 찾을 수 없습니다."}</p>
-        <Link href="/" className="text-[var(--accent)] hover:underline">홈으로</Link>
+        <p className="text-[var(--danger)]">{error || "Card not found."}</p>
+        <Link href="/" className="text-[var(--accent)] hover:underline">Back to Home</Link>
       </main>
     );
   }
@@ -65,7 +65,7 @@ export default function ResultView() {
               ← Deal Lens
             </Link>
             <Link href="/history" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]">
-              딜 목록
+              Deals
             </Link>
             <Link href="/workforce" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]">
               Workforce
@@ -74,33 +74,33 @@ export default function ResultView() {
               href={`/deals/${encodeURIComponent(card.companyName)}`}
               className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]"
             >
-              {card.companyName} 딜
+              {card.companyName} Deal
             </Link>
           </div>
           <button
             onClick={copyLink}
             className="rounded-lg border border-[var(--accent)]/50 bg-[var(--accent)]/10 px-4 py-2 text-sm font-medium text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-colors"
           >
-            {copied ? "복사됨!" : "Copy link"}
+            {copied ? "Copied!" : "Copy link"}
           </button>
         </header>
 
-        {/* 근거 부족/미확인 경고 */}
+        {/* Insufficient/unverified evidence warning */}
         {(hasLowEvidence || unverifiedCount > 0) && (
           <div className="mb-6 rounded-xl border border-[var(--warning)]/50 bg-[var(--warning)]/10 px-4 py-3">
             <p className="text-sm font-medium text-[var(--warning)]">
-              ⚠️ 근거 부족 또는 미확인 정보가 포함되어 있습니다
+              ⚠️ Insufficient or unverified evidence included
             </p>
             <p className="mt-1 text-xs text-[var(--muted)]">
-              {hasLowEvidence && `증거 점수 ${card.evidenceScore}점 — `}
-              {unverifiedCount > 0 && `신뢰도 50% 미만 주장 ${unverifiedCount}건 — `}
-              아래 Evidence Ledger에서 출처·신뢰도를 확인하세요.
+              {hasLowEvidence && `Evidence score ${card.evidenceScore} — `}
+              {unverifiedCount > 0 && `${unverifiedCount} claims below 50% confidence — `}
+              Check sources and confidence in the Evidence Ledger below.
             </p>
           </div>
         )}
 
         <div className="space-y-6">
-          {/* 헤더 카드 */}
+          {/* Header card */}
           <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
             <h1 className="text-2xl font-bold text-[var(--foreground)]">{card.companyName}</h1>
             <p className="mt-2 text-[var(--muted)]">{card.question}</p>
@@ -115,15 +115,15 @@ export default function ResultView() {
             </div>
           </section>
 
-          {/* 소스 품질 */}
+          {/* Source Quality */}
           {card.sourceQualitySummary && (
             <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">소스 품질</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Source Quality</h2>
               <div className="mt-3 flex gap-6 text-sm">
-                <span>1차: {card.sourceQualitySummary.primarySources}</span>
-                <span>2차: {card.sourceQualitySummary.secondarySources}</span>
+                <span>Primary: {card.sourceQualitySummary.primarySources}</span>
+                <span>Secondary: {card.sourceQualitySummary.secondarySources}</span>
                 <span className={card.sourceQualitySummary.unknown > 0 ? "text-[var(--warning)]" : ""}>
-                  미확인: {card.sourceQualitySummary.unknown}
+                  Unknown: {card.sourceQualitySummary.unknown}
                 </span>
               </div>
               {card.sourceQualitySummary.notes && (
@@ -163,10 +163,10 @@ export default function ResultView() {
                         }
                       >
                         {entry.confidence >= 0.7
-                          ? "✓ 근거 있음"
+                          ? "✓ Verified"
                           : entry.confidence >= 0.4
-                          ? "△ 부분 근거"
-                          : "✗ 미확인"}
+                          ? "△ Partial"
+                          : "✗ Unverified"}
                         {" "}({(entry.confidence * 100).toFixed(0)}%)
                       </span>
                       {entry.sourceUrl && (
@@ -176,11 +176,11 @@ export default function ResultView() {
                           rel="noopener noreferrer"
                           className="text-[var(--accent)] hover:underline"
                         >
-                          출처
+                          Source
                         </a>
                       )}
                       {!entry.sourceUrl && entry.confidence < 0.5 && (
-                        <span className="text-[var(--danger)]">출처 없음</span>
+                        <span className="text-[var(--danger)]">No source</span>
                       )}
                     </div>
                   </li>
@@ -192,13 +192,13 @@ export default function ResultView() {
           {/* Missing Coverage */}
           {card.missingCoverage?.length > 0 && (
             <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">커버리지 갭</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Coverage Gaps</h2>
               <ul className="mt-4 space-y-4">
                 {card.missingCoverage.map((item, i) => (
                   <li key={i} className="rounded-lg border border-[var(--card-border)] p-4">
                     <p className="font-medium text-[var(--foreground)]">{item.area}</p>
                     <p className="mt-1 text-sm text-[var(--muted)]">{item.whyItMatters}</p>
-                    <p className="mt-1 text-sm text-[var(--accent)]">확인할 것: {item.whatToCheck}</p>
+                    <p className="mt-1 text-sm text-[var(--accent)]">Check: {item.whatToCheck}</p>
                   </li>
                 ))}
               </ul>
@@ -208,13 +208,13 @@ export default function ResultView() {
           {/* Contradiction Flags */}
           {card.contradictionFlags?.length > 0 && (
             <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">모순 플래그</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Contradiction Flags</h2>
               <ul className="mt-4 space-y-4">
                 {card.contradictionFlags.map((item, i) => (
                   <li key={i} className="rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/5 p-4">
                     <p className="font-medium text-[var(--foreground)]">{item.flag}</p>
                     <p className="mt-1 text-sm text-[var(--muted)]">{item.whyItMatters}</p>
-                    <p className="mt-1 text-sm text-[var(--accent)]">해결: {item.howToResolve}</p>
+                    <p className="mt-1 text-sm text-[var(--accent)]">Resolve: {item.howToResolve}</p>
                   </li>
                 ))}
               </ul>
@@ -224,7 +224,7 @@ export default function ResultView() {
           {/* Diligence Questions */}
           {card.diligenceQuestions?.length > 0 && (
             <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">실사 질문</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Diligence Questions</h2>
               <ul className="mt-4 space-y-4">
                 {card.diligenceQuestions.map((q, i) => (
                   <li key={i} className="rounded-lg border border-[var(--card-border)] p-4">
@@ -243,7 +243,7 @@ export default function ResultView() {
                       <p className="font-medium text-[var(--foreground)]">{q.question}</p>
                     </div>
                     <p className="mt-1 text-sm text-[var(--muted)]">{q.whyThisQuestion}</p>
-                    <p className="mt-1 text-sm text-[var(--accent)]">기대 증거: {q.expectedEvidence}</p>
+                    <p className="mt-1 text-sm text-[var(--accent)]">Expected evidence: {q.expectedEvidence}</p>
                   </li>
                 ))}
               </ul>
@@ -253,7 +253,7 @@ export default function ResultView() {
           {/* Red Flags */}
           {card.redFlags?.length > 0 && (
             <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">리스크 플래그</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Red Flags</h2>
               <ul className="mt-4 space-y-3">
                 {card.redFlags.map((item, i) => (
                   <li key={i} className="flex gap-3">
@@ -281,7 +281,7 @@ export default function ResultView() {
           {/* Assumptions */}
           {card.assumptions?.length > 0 && (
             <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">가정</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Assumptions</h2>
               <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--muted)]">
                 {card.assumptions.map((a, i) => (
                   <li key={i}>{a}</li>
@@ -293,7 +293,7 @@ export default function ResultView() {
           {/* Next Actions */}
           {card.nextActions?.length > 0 && (
             <section className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-6">
-              <h2 className="text-lg font-semibold text-[var(--foreground)]">다음 액션</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Next Actions</h2>
               <ul className="mt-4 space-y-2">
                 {card.nextActions.map((a, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm">

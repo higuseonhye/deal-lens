@@ -17,7 +17,7 @@ export async function extractTextFromUrl(url: string): Promise<{ text: string; t
 
   const html = await res.text();
   if (html.length > 500_000) {
-    throw new Error("페이지가 너무 큽니다 (500KB 초과)");
+    throw new Error("Page too large (exceeds 500KB)");
   }
 
   const $ = cheerio.load(html);
@@ -26,9 +26,9 @@ export async function extractTextFromUrl(url: string): Promise<{ text: string; t
   let text = $(bodySelector).text().replace(/\s+/g, " ").trim();
 
   if (text.length > MAX_CONTENT_LENGTH) {
-    text = text.slice(0, MAX_CONTENT_LENGTH) + "\n[... 내용 생략 ...]";
+    text = text.slice(0, MAX_CONTENT_LENGTH) + "\n[... content truncated ...]";
   }
 
   const title = $("title").first().text().trim() || undefined;
-  return { text: text || "(텍스트를 추출할 수 없습니다)", title };
+  return { text: text || "(Could not extract text)", title };
 }
