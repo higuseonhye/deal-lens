@@ -17,7 +17,7 @@ model Agent {
   tasks     Task[]
 }
 
-// AgentOS: Each work unit (Reputation 시드)
+// AgentOS: Each work unit (Reputation seed)
 model Task {
   id           String   @id @default(cuid())
   createdAt    DateTime @default(now())
